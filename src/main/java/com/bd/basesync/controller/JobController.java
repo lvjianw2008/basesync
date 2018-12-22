@@ -1,9 +1,12 @@
 package com.bd.basesync.controller;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.quartz.*;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,8 @@ import com.bd.basesync.entity.JobAndTrigger;
 import com.bd.basesync.job.BaseJob;
 import com.bd.basesync.service.IJobAndTriggerService;
 import com.github.pagehelper.PageInfo;
+
+import javax.sql.DataSource;
 
 
 @RestController
@@ -170,6 +175,31 @@ public class JobController
             scheduler.triggerJob(JobKey.jobKey(jobName, jobGroupName));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 查询和清空缓存中的任务
+     * LV
+     * 2018年12月20日 14:50:00
+     */
+    @PostMapping(value="/getAllJobs")
+    public void getAllJobs(){
+        try {
+            for (String groupName : scheduler.getJobGroupNames()) {
+                for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
+                    String jobName = jobKey.getName();
+                    String jobGroup = jobKey.getGroup();
+                    //get job's trigger
+                    List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
+                    Date nextFireTime = triggers.get(0).getNextFireTime();
+                    System.out.println("[jobName] : " + jobName + " [groupName] : "
+                            + jobGroup + " - " + nextFireTime);
+                    jobdelete(jobName,groupName);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

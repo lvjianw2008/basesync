@@ -23,6 +23,7 @@
     <div id="top">
         <el-button type="text" @click="search" style="color:white">查询</el-button>
         <el-button type="text" @click="handleadd" style="color:white">添加</el-button>
+        <!--<el-button type="text" @click="getAllJobs" style="color:white">查询缓存</el-button>-->
         </span>
     </div>
 
@@ -264,6 +265,15 @@
                 this.dialogFormVisible = true;
             },
 
+            //查询缓存
+            getAllJobs: function(){
+                this.$http.post('job/getAllJobs',{"jobName":this.form.jobName,"jobClassName":this.form.jobClassName,"jobGroupName":this.form.jobGroup,"cronExpression":this.form.cronExpression},{emulateJSON: true}).then(function(res){
+                    this.loadData(this.currentPage, this.pagesize);
+                    this.dialogFormVisible = false;
+                },function(){
+                    console.log('failed');
+                });
+            },
             //添加
             add: function(){
                 this.$http.post('job/addjob',{"jobName":this.form.jobName,"jobClassName":this.form.jobClassName,"jobGroupName":this.form.jobGroup,"cronExpression":this.form.cronExpression},{emulateJSON: true}).then(function(res){

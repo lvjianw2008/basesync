@@ -3,8 +3,10 @@ package com.bd.basesync;
 import java.io.IOException;
 import java.util.Properties;
 
+import com.bd.basesync.job.jobFactory.MyJobFactory;
 import org.quartz.Scheduler;
 import org.quartz.ee.servlet.QuartzInitializerListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,10 +16,14 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 @Configuration
 public class SchedulerConfig {
 
+    @Autowired
+    private MyJobFactory myJobFactory;
+
     @Bean(name="SchedulerFactory")
     public SchedulerFactoryBean schedulerFactoryBean() throws IOException {
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
         factory.setQuartzProperties(quartzProperties());
+        factory.setJobFactory(myJobFactory);
         return factory;
     }
 
