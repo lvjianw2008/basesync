@@ -13,6 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>basesync</name>
 	<description>basesync project for Spring Boot</description>
+	<!--<packaging>war</packaging>-->
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -72,6 +73,11 @@
 			<artifactId>ojdbc7</artifactId>
 			<version>12.1.0.1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
     </dependencies>
 
 	<build>
@@ -82,6 +88,9 @@
 				<!--<configuration>-->
 					<!--<fork>true</fork>-->
 				<!--</configuration>-->
+				<configuration>
+					<mainClass>com.bd.basesync.BasesyncApplication</mainClass>
+				</configuration>
 			</plugin>
 		</plugins>
 		<resources>
@@ -91,7 +100,15 @@
 					<include>**/*.xml</include>
 				</includes>
 			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.*</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
 		</resources>
+
 	</build>
 
 </project>

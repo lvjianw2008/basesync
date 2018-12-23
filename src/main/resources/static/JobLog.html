@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>百大NC基础数据同步管理-任务日志</title>
+    <link rel="stylesheet" href="js/element-ui/lib/theme-chalk/index.css">
+    <script src="js/vue/dist/vue.js"></script>
+    <script src="js/vue/dist/vue-resource.js"></script>
+    <script src="js/element-ui/lib/index.js"></script>
+    <script src="js/moment.js"></script>
+
+    <style>
+        #top {
+            background:#dcdfe6;
+            padding:5px;
+            overflow:hidden
+        }
+        .el-table .warning-row {
+            background: oldlace;
+        }
+        .el-table .success-row {
+            background: #f0f9eb;
+        }
+    </style>
+
+</head>
+<body>
+<div id="test">
+
+    <div id="top">
+        <el-button
+                size="small"
+                type="success"
+                @click="bak()">返回</el-button>
+    </div>
+
+    <br/>
+
+    <div style="margin-top:15px">
+
+        <el-table
+                :data="tableData"
+                style="width:100%"
+                :row-class-name="tableRowClassName"
+                border>
+            <el-table-column
+                    prop="job_NAME"
+                    label="任务名称"
+                    sortable
+                    show-overflow-tooltip>
+            </el-table-column>
+
+            <el-table-column
+                    prop="job_STATUS"
+                    label="任务状态"
+                    sortable>
+            </el-table-column>
+
+            <el-table-column
+                    prop="job_EXEC_TIME"
+                    label="任务执行时间"
+                    :formatter="dateFormat"
+                    sortable>
+            </el-table-column>
+
+            <el-table-column
+                    prop="job_COST_TIME"
+                    label="消耗时间(秒)"
+                    sortable>
+            </el-table-column>
+
+            <el-table-column
+                    prop="job_INSERT_COUNT"
+                    label="任务插入数据条数"
+                    sortable>
+            </el-table-column>
+
+            <el-table-column
+                    prop="job_UPDATE_COUNT"
+                    label="任务更新数据条数"
+                    sortable>
+            </el-table-column>
+
+            <el-table-column
+                    prop="job_CLASS"
+                    label="任务执行路径"
+                    sortable>
+            </el-table-column>
+        </el-table>
+
+        <div align="center">
+            <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-sizes="[10, 20, 30, 40]"
+                    :page-size="pagesize"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="totalCount">
+            </el-pagination>
+        </div>
+    </div>
+</div>
+
+<footer align="center">
+    <p>&copy; 百大NC基础数据同步管理</p>
+</footer>
+
+<script>
+    var vue = new Vue({
+        el:"#test",
+        data: {
+            //表格当前页数据
+            tableData: [],
+
+            //请求的URL
+            url:'jobLog/queryjob',
+
+            //默认每页数据量
+            pagesize: 10,
+
+            //当前页码
+            currentPage: 1,
+
+            //查询的页码
+            start: 1,
+
+            //默认数据总数
+            totalCount: 1000,
+
+            //添加对话框默认可见性
+            dialogFormVisible: false,
+
+            //修改对话框默认可见性
+            updateFormVisible: false,
+        },
+        methods: {
+
+            //从服务器读取数据
+            loadData: function(pageNum, pageSize){
+                var jobName = getQueryString('jobName');
+                this.$http.get('jobLog/queryJobLogByJobName?' + 'pageNum=' +  pageNum + '&pageSize=' + pageSize+'&jobName='+jobName+'').then(function(res){
+                    this.tableData = res.body.JobLog.list;
+                    this.totalCount = res.body.number;
+                },function(){
+                    console.log('failed');
+                });
+            },
+
+            //查看日志
+            bak: function(index, row){
+                history.back();
+            },
+
+            //每页显示数据量变更
+            handleSizeChange: function(val) {
+                this.pagesize = val;
+                this.loadData(this.currentPage, this.pagesize);
+            },
+
+            //页码变更
+            handleCurrentChange: function(val) {
+                this.currentPage = val;
+                this.loadData(this.currentPage, this.pagesize);
+            },
+
+            dateFormat:function(row, column) {
+                var date = row[column.property];
+                if (date == undefined) {
+                    return "";
+                }
+                return moment(date).format("YYYY-MM-DD HH:mm:ss");
+            },
+
+            tableRowClassName:function(row, column) {
+                var s = row.row.job_STATUS;
+                if (s == 'SUCCESS') {
+                    return 'success-row';
+                } else{
+                    return 'warning-row';
+                }
+                return '';
+            },
+
+        },
+
+
+    });
+
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return r[2];
+        return null;
+    }
+
+    //载入数据
+    vue.loadData(vue.currentPage, vue.pagesize);
+</script>
+
+</body>
+</html>

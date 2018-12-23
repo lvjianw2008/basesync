@@ -120,10 +120,10 @@ public class BaseDataSet {
 				map.put("user", "root");
 				map.put("password", "nosFMiGCARhB4oxu");
 			}else if(dataSourceStr.equals("nc")){
-				map.put("driver", "com.mysql.cj.jdbc.Driver");
-				map.put("url", "jdbc:mysql://120.27.157.8:3306/lvtest1");
-				map.put("user", "root");
-				map.put("password", "nosFMiGCARhB4oxu");
+				map.put("driver", "oracle.jdbc.driver.OracleDriver");
+				map.put("url", "jdbc:oracle:thin:@192.9.200.241:1521:orcl");
+				map.put("user", "ncllzj");
+				map.put("password", "ncllzj");
 			}
 		}catch (Exception e) {
 			e.printStackTrace();

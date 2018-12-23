@@ -32,7 +32,7 @@ public class JobController
     @Autowired
     private IJobAndTriggerService iJobAndTriggerService;
 
-    //加入Qulifier注解，通过名称注入bean
+    //加入Qulifier注解，通过名称注入been
     @Autowired @Qualifier("Scheduler")
     private Scheduler scheduler;
 
@@ -52,24 +52,7 @@ public class JobController
 
         // 启动调度器
         scheduler.start();
-
-        //构建job信息
-        JobDetail jobDetail = JobBuilder.newJob(getClass(jobClassName).getClass()).withIdentity(jobName, jobGroupName).build();
-
-        //表达式调度构建器(即任务执行的时间)
-        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression);
-
-        //按新的cronExpression表达式构建一个新的trigger
-        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(jobClassName, jobGroupName)
-                .withSchedule(scheduleBuilder).build();
-
-        try {
-            scheduler.scheduleJob(jobDetail, trigger);
-
-        } catch (SchedulerException e) {
-            System.out.println("创建定时任务失败"+e);
-            throw new Exception("创建定时任务失败");
-        }
+        createJob(jobName,jobClassName,jobGroupName,cronExpression);
     }
 
 
@@ -185,6 +168,16 @@ public class JobController
      */
     @PostMapping(value="/getAllJobs")
     public void getAllJobs(){
+    }
+
+    /**
+     * 初始化任务
+     * LV
+     * 2018年12月22日 23:13:00
+     */
+    @PostMapping(value="/initJobData")
+    public void initJobData() throws Exception {
+        // 查询和清空任务列表
         try {
             for (String groupName : scheduler.getJobGroupNames()) {
                 for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
@@ -200,6 +193,33 @@ public class JobController
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        // 开始初始化
+        // 启动调度器
+        scheduler.start();
+        createJob("同步费用科目档案","com.bd.basesync.job.UpdateAccountJob","bd_g1","0 0 1 * * ? ");
+        createJob("同步客商档案","com.bd.basesync.job.UpdateBusinessJob","bd_g1","0 0 2 * * ? ");
+        createJob("同步部门档案","com.bd.basesync.job.UpdateDept","bd_g1","0 0 3 * * ? ");
+        createJob("同步人员档案","com.bd.basesync.job.UpdatePerson","bd_g1","0 0 4 * * ? ");
+
+    }
+
+    private void createJob(String jobName,String jobClassName,String jobGroupName,String cronExpression) throws Exception {
+        //构建job信息
+        JobDetail jobDetail = JobBuilder.newJob(getClass(jobClassName).getClass()).withIdentity(jobName, jobGroupName).build();
+
+        //表达式调度构建器(即任务执行的时间)
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression);
+
+        //按新的cronExpression表达式构建一个新的trigger
+        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(jobClassName, jobGroupName)
+                .withSchedule(scheduleBuilder).build();
+
+        try {
+            scheduler.scheduleJob(jobDetail, trigger);
+
+        } catch (SchedulerException e) {
+            System.out.println("创建定时任务失败"+e);
         }
     }
 }

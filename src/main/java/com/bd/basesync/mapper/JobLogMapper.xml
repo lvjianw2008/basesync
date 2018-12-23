@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bd.basesync.dao.JobLogMapper">
+
+    <select id="queryJobLogByJobName" parameterType="String" resultType="com.bd.basesync.entity.JobLog">
+        SELECT * from QRTZ_JOB_LOG where JOB_NAME = #{jobName} order by JOB_EXEC_TIME desc
+    </select>
+
+    <select id="insertJobLog" parameterType="com.bd.basesync.entity.JobLog">
+        insert into QRTZ_JOB_LOG(JOB_NAME, JOB_STATUS, JOB_EXEC_TIME, JOB_COST_TIME, JOB_INSERT_COUNT,JOB_UPDATE_COUNT,JOB_CLASS,JOB_LOG_DETAIL)
+               values(#{JOB_NAME}, #{JOB_STATUS}, #{JOB_EXEC_TIME}, #{JOB_COST_TIME}, #{JOB_INSERT_COUNT},#{JOB_UPDATE_COUNT},#{JOB_CLASS},#{JOB_LOG_DETAIL})
+    </select>
+
+</mapper>

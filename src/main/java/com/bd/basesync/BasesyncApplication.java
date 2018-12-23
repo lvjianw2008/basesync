@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan("com.bd.basesync")
+//@ComponentScan("com.bd.basesync")
 @MapperScan("com.bd.basesync.dao")
 @SpringBootApplication
 public class BasesyncApplication {
