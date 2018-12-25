@@ -81,17 +81,17 @@ public class JobController
 
 
     @PostMapping(value="/reschedulejob")
-    public void rescheduleJob(@RequestParam(value="jobName")String jobName,
+    public void rescheduleJob(@RequestParam(value="jobClassName")String jobClassName,
                               @RequestParam(value="jobGroupName")String jobGroupName,
                               @RequestParam(value="cronExpression")String cronExpression) throws Exception
     {
-        jobreschedule(jobName, jobGroupName, cronExpression);
+        jobreschedule(jobClassName, jobGroupName, cronExpression);
     }
 
-    public void jobreschedule(String jobName, String jobGroupName, String cronExpression) throws Exception
+    public void jobreschedule(String jobClassName, String jobGroupName, String cronExpression) throws Exception
     {
         try {
-            TriggerKey triggerKey = TriggerKey.triggerKey(jobName, jobGroupName);
+            TriggerKey triggerKey = TriggerKey.triggerKey(jobClassName, jobGroupName);
             // 表达式调度构建器
             CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression);
 

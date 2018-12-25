@@ -105,12 +105,10 @@
                     <!--size="small"-->
                     <!--type="warning"-->
                     <!--@click="handlePause(scope.$index, scope.row)">暂停</el-button>-->
-
-                    <el-button
-                            size="small"
-                            type="info"
-                            @click="handleResume(scope.$index, scope.row)">恢复</el-button>
-
+                    <!--<el-button-->
+                            <!--size="small"-->
+                            <!--type="info"-->
+                            <!--@click="handleResume(scope.$index, scope.row)">恢复</el-button>-->
 
                     <el-button
                             size="small"
@@ -118,8 +116,9 @@
                             @click="handleUpdate(scope.$index, scope.row)">修改</el-button>
 
                     <el-button
-                            type="danger" icon="el-icon-delete"
-                            @click="handleDelete(scope.$index, scope.row)"></el-button>
+                            size="small"
+                            type="danger"
+                            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
