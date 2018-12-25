@@ -6,11 +6,12 @@
     <link rel="stylesheet" href="js/element-ui/lib/theme-chalk/index.css">
     <script src="js/vue/dist/vue.js"></script>
     <script src="js/vue/dist/vue-resource.js"></script>
+    <script src="js/vue/dist/vue-router.js"></script>
     <script src="js/element-ui/lib/index.js"></script>
-
+    <script src="js/moment.js"></script>
     <style>
         #top {
-            background:#20A0FF;
+            background:#dcdfe6;
             padding:5px;
             overflow:hidden
         }
@@ -21,10 +22,10 @@
 <div id="test">
 
     <div id="top">
-        <el-button type="text" @click="search" style="color:white">查询</el-button>
-        <el-button type="text" @click="handleadd" style="color:white">添加</el-button>
+        <!--<el-button icon="el-icon-search" @click="search">查询</el-button>-->
+        <el-button size="small" type="success" @click="handleadd" round>添加任务</el-button>
+        <el-button size="small" type="danger" @click="initJobData" round>初始化</el-button>
         <!--<el-button type="text" @click="getAllJobs" style="color:white">查询缓存</el-button>-->
-        </span>
     </div>
 
     <br/>
@@ -73,13 +74,21 @@
                     label="表达式"
                     sortable>
             </el-table-column>
-<!--
+
             <el-table-column
-                    prop="time_ZONE_ID"
-                    label="时区"
+                    prop="next_FIRE_TIME"
+                    label="下次执行时间"
+                    :formatter="dateFormat"
                     sortable>
             </el-table-column>
--->
+            <!--
+                        <el-table-column
+                                prop="time_ZONE_ID"
+                                label="时区"
+                                sortable>
+                        </el-table-column>
+            -->
+
             <el-table-column label="操作" width="400">
                 <template scope="scope">
                     <el-button
@@ -90,23 +99,27 @@
                     <el-button
                             size="small"
                             type="warning"
-                            @click="handlePause(scope.$index, scope.row)">暂停</el-button>
+                            @click="queryLog(scope.$index, scope.row)">日志</el-button>
+
+                    <!--<el-button-->
+                    <!--size="small"-->
+                    <!--type="warning"-->
+                    <!--@click="handlePause(scope.$index, scope.row)">暂停</el-button>-->
 
                     <el-button
                             size="small"
                             type="info"
                             @click="handleResume(scope.$index, scope.row)">恢复</el-button>
 
-                    <el-button
-                            size="small"
-                            type="danger"
-                            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
 
                     <el-button
                             size="small"
                             type="success"
                             @click="handleUpdate(scope.$index, scope.row)">修改</el-button>
 
+                    <el-button
+                            type="danger" icon="el-icon-delete"
+                            @click="handleDelete(scope.$index, scope.row)"></el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -237,6 +250,13 @@
                 });
             },
 
+            //查看日志
+            queryLog: function(index, row){
+                var jobName = row.job_NAME;
+                window.location.href="JobLog.html?jobName="+jobName;
+
+            },
+
             //恢复任务
             handleResume: function(index, row){
                 this.$http.post('job/resumejob',{"jobName":row.job_NAME,"jobGroupName":row.job_GROUP},{emulateJSON: true}).then(function(res){
@@ -249,6 +269,15 @@
             //执行任务
             handleExec: function(index, row){
                 this.$http.post('job/execJob',{"jobName":row.job_NAME,"jobGroupName":row.job_GROUP},{emulateJSON: true}).then(function(res){
+                    this.loadData( this.currentPage, this.pagesize);
+                },function(){
+                    console.log('failed');
+                });
+            },
+
+            //初始化job数据
+            initJobData: function(index, row){
+                this.$http.post('job/initJobData',{},{emulateJSON: true}).then(function(res){
                     this.loadData( this.currentPage, this.pagesize);
                 },function(){
                     console.log('failed');
@@ -291,6 +320,14 @@
                 this.updateform.jobName = row.job_NAME;
                 this.updateform.jobClassName = row.job_CLASS_NAME;
                 this.updateform.jobGroup = row.job_GROUP;
+            },
+
+            dateFormat:function(row, column) {
+                var date = row[column.property];
+                if (date == undefined) {
+                    return "";
+                }
+                return moment(new Date(date)).format("YYYY-MM-DD HH:mm:ss");
             },
 
             //更新任务

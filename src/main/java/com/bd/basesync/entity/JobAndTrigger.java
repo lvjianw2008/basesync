@@ -12,6 +12,7 @@ public class JobAndTrigger {
     private BigInteger TIMES_TRIGGERED;
     private String CRON_EXPRESSION;
     private String TIME_ZONE_ID;
+    private BigInteger NEXT_FIRE_TIME;
 
     public String getJOB_NAME() {
         return JOB_NAME;
@@ -67,5 +68,10 @@ public class JobAndTrigger {
     public void setTIME_ZONE_ID(String tIME_ZONE_ID) {
         TIME_ZONE_ID = tIME_ZONE_ID;
     }
-
+    public BigInteger getNEXT_FIRE_TIME() {
+        return NEXT_FIRE_TIME;
+    }
+    public void setNEXT_FIRE_TIME(BigInteger nEXT_FIRE_TIME) {
+        this.NEXT_FIRE_TIME = nEXT_FIRE_TIME;
+    }
 }
