@@ -105,10 +105,12 @@
                     <!--size="small"-->
                     <!--type="warning"-->
                     <!--@click="handlePause(scope.$index, scope.row)">暂停</el-button>-->
+
                     <!--<el-button-->
-                            <!--size="small"-->
-                            <!--type="info"-->
-                            <!--@click="handleResume(scope.$index, scope.row)">恢复</el-button>-->
+                    <!--size="small"-->
+                    <!--type="info"-->
+                    <!--@click="handleResume(scope.$index, scope.row)">恢复</el-button>-->
+
 
                     <el-button
                             size="small"
@@ -116,8 +118,7 @@
                             @click="handleUpdate(scope.$index, scope.row)">修改</el-button>
 
                     <el-button
-                            size="small"
-                            type="danger"
+                            type="danger" size="small"
                             @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                 </template>
             </el-table-column>
@@ -233,29 +234,11 @@
 
             //单行删除
             handleDelete: function(index, row) {
-                this.$confirm('确定删除?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$http.post('job/deletejob',{"jobName":row.job_NAME,"jobGroupName":row.job_GROUP},{emulateJSON: true}).then(res=>{
-                        this.loadData( this.currentPage, this.pagesize);
-                        this.$message({
-                            type: 'success',
-                            message: '删除成功!'
-                        });
-                    },()=>{
-                        this.$message.error('执行错误，请联系管理员。');;
-                    });
-
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消删除'
-                    });
+                this.$http.post('job/deletejob',{"jobName":row.job_NAME,"jobGroupName":row.job_GROUP},{emulateJSON: true}).then(function(res){
+                    this.loadData( this.currentPage, this.pagesize);
+                },function(){
+                    console.log('failed');
                 });
-
-
             },
 
             //暂停任务
@@ -271,6 +254,7 @@
             queryLog: function(index, row){
                 var jobName = row.job_NAME;
                 window.location.href="JobLog.html?jobName="+jobName;
+
             },
 
             //恢复任务
@@ -286,40 +270,17 @@
             handleExec: function(index, row){
                 this.$http.post('job/execJob',{"jobName":row.job_NAME,"jobGroupName":row.job_GROUP},{emulateJSON: true}).then(function(res){
                     this.loadData( this.currentPage, this.pagesize);
-                    this.$notify({
-                        title: '成功',
-                        message: '执行任务成功，详细信息请查阅日志。',
-                        type: 'success'
-                    });
                 },function(){
-                    this.$notify.error({
-                        title: '错误',
-                        message: '执行任务错误，详细信息请查阅日志。'
-                    });
+                    console.log('failed');
                 });
             },
 
             //初始化job数据
             initJobData: function(index, row){
-                this.$confirm('确定执行初始化?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$http.post('job/initJobData',{},{emulateJSON: true}).then(function(res){
-                        this.loadData( this.currentPage, this.pagesize);
-                        this.$message({
-                            type: 'success',
-                            message: '初始化成功!'
-                        });
-                    },()=>{
-                        this.$message.error('执行错误，请联系管理员。');;
-                    });
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消执行。'
-                    });
+                this.$http.post('job/initJobData',{},{emulateJSON: true}).then(function(res){
+                    this.loadData( this.currentPage, this.pagesize);
+                },function(){
+                    console.log('failed');
                 });
             },
 
@@ -347,19 +308,13 @@
                 this.$http.post('job/addjob',{"jobName":this.form.jobName,"jobClassName":this.form.jobClassName,"jobGroupName":this.form.jobGroup,"cronExpression":this.form.cronExpression},{emulateJSON: true}).then(function(res){
                     this.loadData(this.currentPage, this.pagesize);
                     this.dialogFormVisible = false;
-                    this.$message({
-                        type: 'success',
-                        message: '添加成功!'
-                    });
-
                 },function(){
-                    this.$message.error('执行错误，请联系管理员。');
+                    console.log('failed');
                 });
             },
 
             //更新
             handleUpdate: function(index, row){
-                console.log(row)
                 this.updateFormVisible = true;
                 this.updateform.jobName = row.job_NAME;
                 this.updateform.jobClassName = row.job_CLASS_NAME;
@@ -387,12 +342,8 @@
                 ).then(function(res){
                     this.loadData(this.currentPage, this.pagesize);
                     this.updateFormVisible = false;
-                    this.$message({
-                        type: 'success',
-                        message: '更新成功!'
-                    });
                 },function(){
-                    this.$message.error('执行错误，请联系管理员。');
+                    console.log('failed');
                 });
 
             },
